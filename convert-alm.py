@@ -60,22 +60,24 @@ if __name__ == "__main__":
 
       elif data[0] == 'Health':
         almanac[sat_id]['svHealth'] = int(data[1])
+        if (almanac[sat_id]['svHealth'] != 0):
+          almanac[sat_id]['skip'] = True # Skip unhealthy satellites
 
       elif data[0] == 'Eccentricity':
         # UBX scaling: 2^-21
         eccentricity_abs = float(data[1])
         eccentricity_relative = eccentricity_abs - almanac[sat_id]['e_ref']
-        almanac[sat_id]['e'] = int(eccentricity_relative / 2**-21)
+        almanac[sat_id]['e'] = round(eccentricity_relative / 2**-21)
 
       elif data[0] == 'week':
-        week = int(float(data[1]))
+        week = round(float(data[1]))
         almanac[sat_id]['gpsWeek'] = week
         almanac[sat_id]['almWNa'] = week % 256
 
       elif data[0] == 'Time of Applicability(s)':
         # UBX scaling: 2^12
         # UBX unit: s
-        almanac[sat_id]['toa'] = int(float(data[1]) / 2**12)
+        almanac[sat_id]['toa'] = round(float(data[1]) / 2**12)
 
       elif data[0] == 'Orbital Inclination(rad)':
         # UBX scaling: 2^-19
@@ -84,47 +86,48 @@ if __name__ == "__main__":
         # Output: SEM format, relative to 0.30 semicircles
         inclination_abs = float(data[1]) / math.pi
         inclination_relative = inclination_abs - almanac[sat_id]['I_ref']
-        almanac[sat_id]['deltaI'] = int(inclination_relative / 2**-19)
+        almanac[sat_id]['deltaI'] = round(inclination_relative / 2**-19)
 
       elif data[0] == 'Rate of Right Ascen(r/s)':
         # UBX scaling: 2^-38
         # UBX unit: semi-circles/s
-        almanac[sat_id]['omegaDot'] = int(float(data[1]) / 2**-38 / math.pi)
+        almanac[sat_id]['omegaDot'] = round(float(data[1]) / (2**-38 * math.pi))
 
       elif data[0] == 'SQRT(A)  (m 1/2)':
         # UBX scaling: 2^-11
         # UBX unit: m^0.5
-        almanac[sat_id]['sqrtA'] = int(float(data[1]) / 2**-11)
+        almanac[sat_id]['sqrtA'] = round(float(data[1]) / 2**-11)
 
       elif data[0] == 'Right Ascen at Week(rad)':
         # UBX scaling: 2^-23
         # UBX unit: semi-circles
-        almanac[sat_id]['omega0'] = int(float(data[1]) / 2**-23 / math.pi)
+        almanac[sat_id]['omega0'] = round(float(data[1]) / (2**-23 * math.pi))
 
       elif data[0] == 'Argument of Perigee(rad)':
         # UBX scaling: 2^-23
         # UBX unit: semi-circles
-        almanac[sat_id]['omega'] = int(float(data[1]) / 2**-23 / math.pi)
+        almanac[sat_id]['omega'] = round(float(data[1]) / (2**-23 * math.pi))
 
       elif data[0] == 'Mean Anom(rad)':
         # UBX scaling: 2^-23
         # UBX unit: semi-circles
-        almanac[sat_id]['m0'] = int(float(data[1]) / 2**-23 / math.pi)
+        almanac[sat_id]['m0'] = round(float(data[1]) / (2**-23 * math.pi))
 
       elif data[0] == 'Af0(s)':
         # UBX scaling: 2^-20
         # UBX unit: s
-        almanac[sat_id]['af0'] = int(float(data[1]) / 2**-20)
+        almanac[sat_id]['af0'] = round(float(data[1]) / 2**-20)
 
       elif data[0] == 'Af1(s/s)':
         # UBX scaling: 2^-38
         # UBX unit: s/s
-        almanac[sat_id]['af1'] = int(float(data[1]) / 2**-38)
+        almanac[sat_id]['af1'] = round(float(data[1]) / 2**-38)
 
   out = b''
 
   for sat_id in almanac:
     if not almanac[sat_id]['skip']:
+      # Generate UBX-MGA-GPS-ALM / UBX-MGA-QZSS-ALM messages
       ubx_gps_alm_length = 36
       header = struct.pack('<BBBBH', 0xb5, 0x62, 0x13, almanac[sat_id]['msgId'],
                           ubx_gps_alm_length)
