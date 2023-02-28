@@ -7,7 +7,7 @@
 import sys
 import math
 import struct
-from pyubx2 import UBXReader, SET
+#from pyubx2 import UBXReader, SET
 
 def ubx_checksum(packet):
   ck_a = 0
@@ -157,8 +157,8 @@ if __name__ == "__main__":
       frame = header + payload + ubx_checksum(header[2 : ] + payload)
 
       # Validate frame
-      msg = UBXReader.parse(frame, validate=True, msgmode=SET)
-      print(msg)
+#      msg = UBXReader.parse(frame, validate=True, msgmode=SET)
+#      print(msg)
 
       out = out + frame
 
