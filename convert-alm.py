@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# Copyright 2023 Jussi Kivilinna
+# License: MIT (see LICENSE file)
+
 import sys
 import math
 import struct
